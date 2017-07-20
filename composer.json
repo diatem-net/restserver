@@ -1,5 +1,5 @@
 {
-    "name": "diatem-net/restserver",
+    "name": "diatem/restserver",
     "description": "Complements a l'API jacwright/resetserver permettant d'etendre les fonctionnalites et d'ajouter la couche securite",
     "type": "library",
     "require": {
