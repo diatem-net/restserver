@@ -10,5 +10,10 @@
             "name": "Loic Gerard",
             "email": "lgerard@diatem.net"
         }
-    ]
+    ],
+	"autoload": {
+        "psr-0": {
+            "Diatem\\RestServer": "src/"
+        }
+    }
 }
