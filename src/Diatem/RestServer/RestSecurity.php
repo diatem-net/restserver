@@ -4,6 +4,6 @@ namespace Diatem\RestServer;
 
 class RestSecurity{
     public function __construct(){
-        echo 'TEST';
+        echo 'TEST 2';
     }
 }
