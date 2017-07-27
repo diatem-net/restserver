@@ -105,6 +105,7 @@ class RestController{
         if($this->server->method == 'POST'){
             //201 pour l'ajout d'une ressource en POST
             $array['httpStatus'] = 201;
+            $this->server->setStatus(201);
         }
 
         return $array;

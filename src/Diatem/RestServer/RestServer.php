@@ -190,7 +190,10 @@ class RestServer extends JRestServer{
 
 		$this->setStatus($statusCode);
 
-		$array = RestConfig::getRestResponseTemplate()->getTemplate();
+		$array = array();
+		if(!is_null(RestConfig::getRestResponseTemplate())){
+			$array = RestConfig::getRestResponseTemplate()->getTemplate();
+		}
         if(isset(self::$request['debug']) && self::$request['debug'] && $obj){
             $obj->perfAnalyser->addPoint();
             $array['executionTime'] =  $obj->perfAnalyser->getTotalTimeInMS();

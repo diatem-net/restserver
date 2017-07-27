@@ -34,12 +34,13 @@ class RestAuthService extends RestController{
             null,
             null
         );
-
+        
         //Authentification
         if(RestSecurity::login($this->args['userID'], $this->args['userKey'])){
             $jwt = RestSecurity::generateJWT($this->args['userID']);
         }
-
+        
         return parent::_response(array('jwt' => $jwt));
+        return ('oui');
     }
 }

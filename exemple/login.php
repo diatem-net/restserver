@@ -8,7 +8,7 @@ session_start();
 
 use Jin2\Com\Curl;
 
-$url = 'http://172.31.6.56/_sandbox/resttest/exemple/rest/v1/login';
+$url = 'http://172.31.6.56/restserver/exemple/rest/v1/login';
 $args = array(
     'userID'  =>  'nomUser',
     'userKey' =>   'EDFA5641EFA76E45'
@@ -40,3 +40,4 @@ $res = json_decode($res, true);
 echo '<hr>';
 $_SESSION['jwt'] = $res['jwt'];
 
+var_dump(Curl::getLastErrorVerbose());

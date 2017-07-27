@@ -11,7 +11,7 @@ use Jin2\Com\Curl;
 
 
 
-$url = 'http://172.31.6.56/_sandbox/resttest/exemple/rest/v1/cornichons';
+$url = 'http://172.31.6.56/restserver/exemple/rest/v1/cornichons';
 
 $args = array(
     'nom'  =>  'A',
