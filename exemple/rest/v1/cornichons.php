@@ -52,7 +52,7 @@ class Cornichons extends RestController{
             null
         );
 
-        return parent::_response(array('task' => 'CORNICHON (fields : '.$this->args['fields'].')');
+        return parent::_response(array('task' => 'CORNICHON (fields : '.$this->args['fields'].')'));
     }
 
     /**
@@ -76,7 +76,7 @@ class Cornichons extends RestController{
             null
         );
 
-        return parent::_response(array('task' => "MODIFICATION D'UN CORNICHON (COMPLETE) : ".$this->args['nom']);
+        return parent::_response(array('task' => "MODIFICATION D'UN CORNICHON (COMPLETE) : ".$this->args['nom']));
     }
 
     /**
@@ -100,7 +100,7 @@ class Cornichons extends RestController{
             null
         );
 
-        return parent::_response(array('task' => "MODIFICATION D'UN CORNICHON (PARTIEL) : ".$this->args['nom']);
+        return parent::_response(array('task' => "MODIFICATION D'UN CORNICHON (PARTIEL) : ".$this->args['nom']));
     }
 
     /**
@@ -139,7 +139,7 @@ class Cornichons extends RestController{
     public function get_cornichons(){
         parent::_exec(array(), true, null, null);
 
-        return parent::_response(array('task' => "CORNICHON LIST");
+        return parent::_response(array('task' => "CORNICHON LIST"));
     }
 
     /**
@@ -154,7 +154,7 @@ class Cornichons extends RestController{
     public function get_cornichons_id_vendeurs(){
          parent::_exec(array(), true, null, null);
 
-        return parent::_response(array('task' => "CORNICHON VENDEUR LIST");
+        return parent::_response(array('task' => "CORNICHON VENDEUR LIST"));
     }
 
     /**
@@ -169,7 +169,7 @@ class Cornichons extends RestController{
     public function get_cornichons_id_vendeurs_id($i = null, $j = null){
          parent::_exec(array(), true, null, null);
 
-        return parent::_response(array('task' => "CORNICHON VENDEUR");
+        return parent::_response(array('task' => "CORNICHON VENDEUR"));
     }
 
 }
