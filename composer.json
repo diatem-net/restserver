@@ -3,7 +3,7 @@
     "description": "Complements a l'API jacwright/restserver permettant d'etendre les fonctionnalites et d'ajouter la couche securite",
     "type": "library",
     "require": {
-        "jacwright/restserver": "dev-master",
+        "jacwright/restserver": "^1.1",
         "diatem-net/jin-com": "^2.0",
         "firebase/php-jwt": "^5.0",
         "diatem-net/jin-log": "^2.0",
