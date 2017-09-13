@@ -139,6 +139,13 @@ class RestArgument{
             throw new RestException(400, 'Argument '.$this->name.' : requis');
         }
 
+         if(!$this->required && !isset(RestServer::$request[$this->name])){
+            if($this->defaultValue !== null){
+                return $this->defaultValue;
+            }
+            return null;
+         }
+
         if($this->type == self::TYPE_STRING){
             if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && !is_string(RestServer::$request[$this->name])){
                 throw new RestException(400, 'Argument '.$this->name.' : type string attendu');
@@ -170,9 +177,11 @@ class RestArgument{
         }else if($this->type == self::TYPE_MIXED){
         }else{
             if(ListTools::len($this->type, '|') > 1){
-                if (!ListTools::contains($this->type, RestServer::$request[$this->name], '|')) {
-                    throw new RestException(400, 'Argument '.$this->name.' : valeur '.RestServer::$request[$this->name].' non supportée ('.$this->type.')');
-                }
+                if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null){
+                    if (!ListTools::contains($this->type, RestServer::$request[$this->name], '|')) {
+                        throw new RestException(400, 'Argument '.$this->name.' : valeur '.RestServer::$request[$this->name].' non supportée ('.$this->type.')');
+                    }
+                }  
             }else{
                 throw new RestException(400, 'Argument '.$this->name.' : type '.$this->type.' non supporté');
             }
@@ -182,6 +191,7 @@ class RestArgument{
         if(!isset(RestServer::$request[$this->name]) && isset($this->defaultValue)){
             return $this->defaultValue;
         }
+
 
         return RestServer::$request[$this->name];
     }

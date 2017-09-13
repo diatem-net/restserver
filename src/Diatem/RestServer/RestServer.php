@@ -46,7 +46,13 @@ class RestServer extends JRestServer{
 	 */
 	function errorHandler($error_level, $error_message, $error_file, $error_line, $error_context){
 		$error = 'lvl:' . $error_level . ' | msg:' . $error_message . ' | file:' . $error_file . ' | ln:' . $error_line.' | context:'.$error_context;
-		$this->handleError(500, $error);
+
+		ob_start(); 
+        debug_print_backtrace(); 
+        $stack = ob_get_contents(); 
+        ob_end_clean(); 
+
+		$this->handleError(500, $error, null, null, $stack);
 	}
 
 	/**
@@ -68,7 +74,13 @@ class RestServer extends JRestServer{
 			case E_COMPILE_WARNING:
 			case E_PARSE:
 				$error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " | msg:" . $lasterror['message'] . " | file:" . $lasterror['file'] . " | ln:" . $lasterror['line'];
-				$this->handleError(500, $error);
+
+				ob_start(); 
+				debug_print_backtrace(); 
+				$stack = ob_get_contents(); 
+				ob_end_clean(); 
+
+				$this->handleError(500, $error, null, null, $stack);
 		}
 	}
 
@@ -130,11 +142,11 @@ class RestServer extends JRestServer{
 
 			try {
 				$this->initClass($obj);
-
+				/*
 				if (!$noAuth && !$this->isAuthorizedByClass($obj)) {
 					$this->sendData($this->unauthorized(true)); //@todo unauthorized returns void
 					exit;
-				}
+				}*/
 
 				$result = call_user_func_array(array($obj, $method), $params);
 
@@ -144,7 +156,7 @@ class RestServer extends JRestServer{
 			} catch (JRestException $e) {
 				$this->handleError($e->getCode(), $e->getMessage());
 			} catch(RestException $e){
-                $this->handleError($e->getCode(), $e->getMessage(), $e->getInternalCode(), $obj);
+                $this->handleError($e->getCode(), $e->getMessage(), $e->getInternalCode(), $obj, $e->getStackTrace());
             }
 
 		} else {
@@ -161,9 +173,9 @@ class RestServer extends JRestServer{
 	 * @param Object $obj Service
 	 * @return void
 	 */
-   public function handleError($statusCode, $errorMessage = null, $internalCode = null, $obj = null)
+   public function handleError($statusCode, $errorMessage = null, $internalCode = null, $obj = null, $stackTrace = null)
 	{
-		
+
 		$method = "handle$statusCode";
 		foreach ($this->errorClasses as $class) {
 			if (is_object($class)) {
@@ -197,11 +209,14 @@ class RestServer extends JRestServer{
         if(isset(self::$request['debug']) && self::$request['debug'] && $obj){
             $obj->perfAnalyser->addPoint();
             $array['executionTime'] =  $obj->perfAnalyser->getTotalTimeInMS();
-
+        }
+		if(isset(self::$request['debug']) && self::$request['debug']){
             $array['logs'] = RestLog::getLogs();
+			$array['errorStack'] = $stackTrace;
         }
 		$array['errorCode'] = $internalCode;
 		$array['errorMessage'] = $errorMessage;
+		
 		$array['httpStatus'] = $statusCode;
 
 		$this->sendData($array);

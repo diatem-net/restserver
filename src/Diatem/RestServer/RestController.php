@@ -20,14 +20,14 @@ class RestController{
      *
      * @var array
      */
-    protected $args = array();
+    public $args = array();
 
     /**
      * Headers de la requête
      *
      * @var array
      */
-    protected $headers = array();
+    public $headers = array();
 
     /**
      * Si appelé en mode debug, objet pour l'analyse des performances

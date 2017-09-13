@@ -15,6 +15,8 @@ class RestException extends Exception{
      */
     private $internalCode;
 
+    private $stackTrace;
+
     /**
      * Constructeur
      *
@@ -24,6 +26,12 @@ class RestException extends Exception{
      */
     public function __construct($httpCode = 500, $message = null, $internalCode = null){
         $this->internalCode = $internalCode;
+
+        ob_start(); 
+        debug_print_backtrace(); 
+        $this->stackTrace = ob_get_contents(); 
+        ob_end_clean(); 
+
         parent::__construct($message, $httpCode);
     }
 
@@ -34,5 +42,9 @@ class RestException extends Exception{
      */
     public function getInternalCode(){
         return $this->internalCode;
+    }
+
+    public function getStackTrace(){
+        return $this->stackTrace;
     }
 }
