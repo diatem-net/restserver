@@ -151,7 +151,7 @@ class RestArgument{
                 throw new RestException(400, 'Argument '.$this->name.' : type string attendu');
             }
         }else if($this->type == self::TYPE_BOOL){
-             if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && !$this->testIfBool(RestServer::$request[$this->name])){
+             if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && $this->testIfBool(RestServer::$request[$this->name]) === null){
                 throw new RestException(400, 'Argument '.$this->name.' : type boolean attendu');
             }
         }else if($this->type == self::TYPE_NUMERIC){
