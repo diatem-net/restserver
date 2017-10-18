@@ -68,6 +68,11 @@ class RestArgument{
      */
     const TYPE_DATETIME = 'datetime';
 
+    /**
+     * Constante définissant un type ARRAY
+     */
+    const TYPE_ARRAY = 'array';
+
      /**
      * Constante définissant un type MIXED (types multiples acceptés)
      */
@@ -173,6 +178,10 @@ class RestArgument{
                     throw new RestException(400, 'Argument '.$this->name.' : type datetime attendu');
                 }
                 RestServer::$request[$this->name] = $val;
+            }
+        }else if($this->type == self::TYPE_ARRAY){
+            if(!is_array(RestServer::$request[$this->name])){
+                throw new RestException(400, 'Argument '.$this->name.' : type array attendu');
             }
         }else if($this->type == self::TYPE_MIXED){
         }else{
