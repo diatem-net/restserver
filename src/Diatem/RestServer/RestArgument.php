@@ -6,6 +6,7 @@ use \Diatem\RestServer\RestException;
 use \Diatem\RestServer\RestServer;
 use Jin2\Utils\StringTools;
 use Jin2\Utils\ListTools;
+use Jin2\DataFormat\Json;
 
 /**
  * Décrit un argument d'une méthode
@@ -72,6 +73,11 @@ class RestArgument{
      * Constante définissant un type ARRAY
      */
     const TYPE_ARRAY = 'array';
+
+    /**
+     * Constante définissant un type FILE (json comprenant deux attributs : fileName (nom du fichier) et fileContent (contenu base64 du fichier))
+     */
+    const TYPE_FILE = 'file';
 
      /**
      * Constante définissant un type MIXED (types multiples acceptés)
@@ -158,6 +164,18 @@ class RestArgument{
         }else if($this->type == self::TYPE_BOOL){
              if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && $this->testIfBool(RestServer::$request[$this->name]) === null){
                 throw new RestException(400, 'Argument '.$this->name.' : type boolean attendu');
+            }
+        }else if($this->type == self::TYPE_FILE){
+            if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null){
+                $dt = Json::decode(RestServer::$request[$this->name]);
+                if(!$dt){
+                    throw new RestException(400, 'Argument '.$this->name.' : type File attendu (json comprenant deux attributs : fileName et fileContent)');
+                }else if(!isset($dt['fileName'])){
+                    throw new RestException(400, 'Argument '.$this->name.' : type File attendu (json comprenant deux attributs : fileName et fileContent)');
+                }else if(!isset($dt['fileContent'])){
+                    throw new RestException(400, 'Argument '.$this->name.' : type File attendu (json comprenant deux attributs : fileName et fileContent)');
+                }
+                return $dt;
             }
         }else if($this->type == self::TYPE_NUMERIC){
             if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && !is_numeric(RestServer::$request[$this->name])){
