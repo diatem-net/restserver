@@ -44,6 +44,13 @@ class RestArgument
      */
     private $defaultValue;
 
+    /**
+     * Taille maximale
+     *
+     * @var mixed
+     */
+    private $maxSize;
+
     //Constantes typage arguments
     /**
      * Constante définissant un type STRING
@@ -92,13 +99,15 @@ class RestArgument
      * @param string $type Type d'argument
      * @param boolean $required Obligatoire ou pas
      * @param mixed $defaultValue Valeur par défaut
+     * @param integer $maxSize Longueur maximale
      */
-    public function __construct($name, $type, $required = false, $defaultValue = null)
+    public function __construct($name, $type, $required = false, $defaultValue = null, $maxSize = null)
     {
         $this->name = $name;
         $this->type = $type;
         $this->required = $required;
         $this->defaultValue = $defaultValue;
+        $this->maxSize = $maxSize;
     }
 
     /**
@@ -142,6 +151,16 @@ class RestArgument
     }
 
     /**
+     * Retourne la taille maximale de la valeur
+     *
+     * @return integer
+     */
+    public function getMaxSize()
+    {
+        return $this->maxSize;
+    }
+
+    /**
      * Vérifie que la valeur de l'argument est compatible
      *
      * @return mixed|void
@@ -166,6 +185,9 @@ class RestArgument
         if ($this->type == self::TYPE_STRING) {
             if (isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && !is_string(RestServer::$request[$this->name])) {
                 throw new RestException(400, 'Argument ' . $this->name . ' : type string attendu');
+            }
+            if(isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && $this->getMaxSize() && strlen(RestServer::$request[$this->name]) > $this->getMaxSize()){
+                throw new RestException(400, 'Argument ' . $this->name . ' : '.strlen(RestServer::$request[$this->name]).' caractères : '. $this->getMaxSize().' caractères acceptés');
             }
         } else if ($this->type == self::TYPE_BOOL) {
             if (isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null && $this->testIfBool(RestServer::$request[$this->name]) === null) {
