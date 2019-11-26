@@ -63,7 +63,7 @@ class RestSecurity{
 
         $user = RestConfig::getUsers()[$userID];
 
-        $tokenId    = base64_encode(mcrypt_create_iv(32));
+        $tokenId    = base64_encode(bin2hex(random_bytes(32)));
         $issuedAt   = time();
         $notBefore  = $issuedAt + RestConfig::getSessionNotUseBeforeSeconds();
         $expire     = $notBefore + RestConfig::getSessionValiditySeconds();         
