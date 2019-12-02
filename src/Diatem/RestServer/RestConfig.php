@@ -219,7 +219,7 @@ class RestConfig{
      * @return void
      */
     public static function setRestResponseTemplate($restResponseTemplate){
-        self::$restResponseTemplate = $restReponseTemplate;
+        self::$restResponseTemplate = $restResponseTemplate;
     }
 
     /**
