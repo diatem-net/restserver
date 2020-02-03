@@ -6,17 +6,26 @@ use \Firebase\JWT\JWT;
 use \Diatem\RestServer\RestException;
 use \Diatem\RestServer\RestConfig;
 use \Diatem\RestServer\RestUser;
+use Jin2\Utils\ListTools;
+use Jin2\Utils\ArrayTools;
 
 /**
  * Classe permettant de gérer la politique de sécurisation des services
  */
 class RestSecurity{
     /**
-     * Utilisateur authentifié
+     * Utilisateur authentifié (authentification Basic)
      *
      * @var Diatem\RestServer\RestUser
      */
     private static $authentificatedUser;
+
+    /**
+     * Token Bearer authentifié (authentification Bearer)
+     *
+     * @var string 
+     */
+    private static $bearerAuthentificatedToken;
 
     /**
      * Vérification d'un jeton JWT
@@ -31,6 +40,47 @@ class RestSecurity{
            self::$authentificatedUser = new RestUser($token->data->userID, null, $token->data->userSecurityPolicies);
         }catch(\Exception $e){
             throw new RestException(401, 'Unauthorized : '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Vérifie une authentification via un header Authenfication Basic
+     */
+    public static function checkBasicCredentials($authentification){
+        $datas = ListTools::toArray($authentification, ' ');
+        if($datas[0] != 'Basic'){
+            throw new RestException(401, 'Unauthorized : header \'Authorization\' Basic requis');
+        }
+
+        $decoded = base64_decode($datas[1]);
+        if(ListTools::len($decoded, ':') != 2){
+            throw new RestException(401, 'Unauthorized : header \'Authorization\' Basic : mauvais format');
+        }
+        $credentials = ListTools::toArray($decoded, ':');
+
+        self::login($credentials[0], $credentials[1]);
+        $user = RestConfig::getUsers()[$credentials[0]];
+        self::$authentificatedUser = new RestUser($credentials[0], null, ArrayTools::toList(RestConfig::getUsers()[$credentials[0]]->getUserSecurityPolicies(), ' '));
+    }
+
+
+
+    public static function checkBearerCrendentials($authentification){
+        if(!RestConfig::getBearerTokenCheckerClassPath() || !RestConfig::getBearerTokenCheckerStaticMethod()){
+            throw new RestException(500, 'Configuration incorrecte du paramétrage de vérification des tokens d\'authentification de type Bearer');
+        }
+
+        $datas = ListTools::toArray($authentification, ' ');
+        if($datas[0] != 'Bearer'){
+            throw new RestException(401, 'Unauthorized : header \'Authorization\' Bearer requis');
+        }
+
+        $return = call_user_func(RestConfig::getBearerTokenCheckerClassPath().'::'.RestConfig::getBearerTokenCheckerStaticMethod(), $datas[1]);
+
+        if($return){
+            self::$bearerAuthentificatedToken = $datas[1];
+        }else{
+            throw new RestException(401, 'Unauthorized : Bearer token invalide');
         }
     }
 
@@ -63,7 +113,7 @@ class RestSecurity{
 
         $user = RestConfig::getUsers()[$userID];
 
-        $tokenId    = base64_encode(bin2hex(random_bytes(32)));
+        $tokenId    = base64_encode(mcrypt_create_iv(32));
         $issuedAt   = time();
         $notBefore  = $issuedAt + RestConfig::getSessionNotUseBeforeSeconds();
         $expire     = $notBefore + RestConfig::getSessionValiditySeconds();         
@@ -102,6 +152,9 @@ class RestSecurity{
      * @return void
      */
     public static function checkAccess($allowTo = null, $disallowTo = null){
+        if(self::$bearerAuthentificatedToken){
+            return;
+        }
         if(!$allowTo && !$disallowTo){
             return;
         }

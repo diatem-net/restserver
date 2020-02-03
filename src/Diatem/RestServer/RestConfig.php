@@ -66,6 +66,36 @@ class RestConfig{
      */
     private static $restResponseTemplate;
 
+    /**
+     * Namespace complet de la classe utilisée pour les vérifications de tokens de type Bearer
+     * 
+     */
+    private static $bearerTokenCheckerClassPath = null;
+
+    /**
+     * Methode de $bearerTokenCheckerClass appelée pour vérifier un token Bearer
+     */
+    private static $bearerTokenCheckerStaticMethod = null;
+
+
+    public static function getBearerTokenCheckerClassPath(){
+        return self::$bearerTokenCheckerClassPath;
+    }
+
+    public static function getBearerTokenCheckerStaticMethod(){
+        return self::$bearerTokenCheckerStaticMethod;
+    }
+
+    /**
+     * Définir la classe / méthode utilisée pour vérifier les tokens de type Bearer (token envoyé en paramètre dans la méthode)
+     * @param object    $classPath      Namespace complet de la classe
+     * @param string    $staticMethod    Nom de la méthode statique qui sera appelée pour vérifier le token (avec token envoyé en paramètre)
+     * 
+     */
+    public static function setBearerTokenChecker($classPath, $staticMethod){
+        self::$bearerTokenCheckerClassPath = $classPath;
+        self::$bearerTokenCheckerStaticMethod = $staticMethod;
+    }
 
     /**
      * Retourne un utilisateur par son userID
@@ -219,7 +249,7 @@ class RestConfig{
      * @return void
      */
     public static function setRestResponseTemplate($restResponseTemplate){
-        self::$restResponseTemplate = $restResponseTemplate;
+        self::$restResponseTemplate = $restReponseTemplate;
     }
 
     /**

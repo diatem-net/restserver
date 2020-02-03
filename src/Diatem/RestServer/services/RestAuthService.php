@@ -41,6 +41,5 @@ class RestAuthService extends RestController{
         }
         
         return parent::_response(array('jwt' => $jwt));
-        return ('oui');
     }
 }

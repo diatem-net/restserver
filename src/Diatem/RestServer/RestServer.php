@@ -25,8 +25,9 @@ class RestServer extends JRestServer{
 	 */
 	private function setRequestArgs(){
 		if($this->method == 'PUT' || $this->method == 'PATCH'){
-			parse_str(file_get_contents("php://input"),$post_vars);
-			foreach($post_vars AS $key => $value){
+			
+
+			foreach($this->data AS $key => $value){
 				self::$request[$key] = $value;
 			}
 		}else{
@@ -100,6 +101,14 @@ class RestServer extends JRestServer{
 		} 
 
 		return parent::findUrl();
+	}
+
+
+	public function getData() {
+
+		parse_str(file_get_contents('php://input'), $data);
+
+		return $data;
 	}
 
 	/**

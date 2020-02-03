@@ -44,9 +44,10 @@ class RestController{
      * @param boolean $secured Définit si la méthode est soumise à authentification
      * @param string $allowTo Liste des groupes de droits (séparés par des espaces) pour lesquels l'appel du service est authorisé (UNIQUEMENT ...) - non compatible avec une valeur dans $disallowTo
      * @param string $disallowTo Liste des groupes de droits (séparés par des espaces) pour lesquels l'appel du service est défendu (TOUS SAUF...) - non compatible avec une valeur dans $allowTo
+     * @param string $secureType    Type de token de sécurisation, "Inherit", "Basic" ou "Bearer" (Inherit : authentification héritée des anciennes versions, Basic : authentification selon le schéma RFC7616 et RFC7617, Bearer : authentification RFC6750 )
      * @return void
      */
-    public function _exec($arguments = array(), $secured = true, $allowTo = null, $disallowTo = null){
+    public function _exec($arguments = array(), $secured = true, $allowTo = null, $disallowTo = null, $secureType = 'Inherit'){
         //Si debug, initialisation de l'analyseur de perfs
         if(isset(RestServer::$request['debug']) && RestServer::$request['debug']){
             $this->perfAnalyser = new PerfAnalyser();
@@ -66,13 +67,31 @@ class RestController{
 
         //Vérification authentification
         if($secured){
-            //Vérification de la présence du header
-            if(!isset($this->headers['Authorization'])){
-                throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
-            }else{
-                //vérification de la conformité du JWT
-                RestSecurity::checkJWT($this->headers['Authorization']);
+            if($secureType == 'Inherit'){
+                //Méthode d'authentification héritée des anciennes versions
+                //Vérification de la présence du header
+                if(!isset($this->headers['Authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+                }else{
+                    //vérification de la conformité du JWT
+                    RestSecurity::checkJWT($this->headers['Authorization']);
+                }
+            }else if($secureType == 'Basic'){
+                if(!isset($this->headers['Authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+                }else{
+                    //vérification de la conformité du JWT
+                    RestSecurity::checkBasicCredentials($this->headers['Authorization']);
+                }
+            }else if($secureType == 'Bearer'){
+                if(!isset($this->headers['Authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+                }else{
+                    RestSecurity::checkBearerCrendentials($this->headers['Authorization']);
+                }
+                
             }
+            
 
             //Vérification de l'accès à la méthode
             if($allowTo || $disallowTo){
@@ -117,7 +136,7 @@ class RestController{
         }
     }
 
-    private function getHeaders(){
+    public function getHeaders(){
         $this->headers = getallheaders();
     }
 
