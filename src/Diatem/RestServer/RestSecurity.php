@@ -48,13 +48,13 @@ class RestSecurity{
      */
     public static function checkBasicCredentials($authentification){
         $datas = ListTools::toArray($authentification, ' ');
-        if($datas[0] != 'Basic'){
-            throw new RestException(401, 'Unauthorized : header \'Authorization\' Basic requis');
+        if(strtolower($datas[0]) != 'basic'){
+            throw new RestException(401, 'Unauthorized : header \'authorization\' Basic requis');
         }
 
         $decoded = base64_decode($datas[1]);
         if(ListTools::len($decoded, ':') != 2){
-            throw new RestException(401, 'Unauthorized : header \'Authorization\' Basic : mauvais format');
+            throw new RestException(401, 'Unauthorized : header \'authorization\' Basic : mauvais format');
         }
         $credentials = ListTools::toArray($decoded, ':');
 
@@ -71,8 +71,8 @@ class RestSecurity{
         }
 
         $datas = ListTools::toArray($authentification, ' ');
-        if($datas[0] != 'Bearer'){
-            throw new RestException(401, 'Unauthorized : header \'Authorization\' Bearer requis');
+        if(strtolower($datas[0]) != 'bearer'){
+            throw new RestException(401, 'Unauthorized : header \'authorization\' bearer requis');
         }
 
         $return = call_user_func(RestConfig::getBearerTokenCheckerClassPath().'::'.RestConfig::getBearerTokenCheckerStaticMethod(), $datas[1]);

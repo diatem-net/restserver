@@ -70,29 +70,27 @@ class RestController{
             if($secureType == 'Inherit'){
                 //Méthode d'authentification héritée des anciennes versions
                 //Vérification de la présence du header
-                if(!isset($this->headers['Authorization'])){
-                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+                if(!isset($this->headers['authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'authorization\' non transmis');
                 }else{
                     //vérification de la conformité du JWT
-                    RestSecurity::checkJWT($this->headers['Authorization']);
+                    RestSecurity::checkJWT($this->headers['authorization']);
                 }
-            }else if($secureType == 'Basic'){
-                if(!isset($this->headers['Authorization'])){
-                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+            }else if(strtolower($secureType) == 'basic'){
+                if(!isset($this->headers['authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'authorization\' non transmis');
                 }else{
                     //vérification de la conformité du JWT
-                    RestSecurity::checkBasicCredentials($this->headers['Authorization']);
+                    RestSecurity::checkBasicCredentials($this->headers['authorization']);
                 }
-            }else if($secureType == 'Bearer'){
-                if(!isset($this->headers['Authorization'])){
-                    throw new RestException(401, 'Unauthorized : header \'Authorization\' non transmis');
+            }else if(strtolower($secureType) == 'bearer'){
+                if(!isset($this->headers['authorization'])){
+                    throw new RestException(401, 'Unauthorized : header \'authorization\' non transmis');
                 }else{
-                    RestSecurity::checkBearerCrendentials($this->headers['Authorization']);
-                }
-                
+                    RestSecurity::checkBearerCrendentials($this->headers['authorization']);
+                }                
             }
             
-
             //Vérification de l'accès à la méthode
             if($allowTo || $disallowTo){
                 RestSecurity::checkAccess($allowTo, $disallowTo);
@@ -137,7 +135,7 @@ class RestController{
     }
 
     public function getHeaders(){
-        $this->headers = getallheaders();
+		$this->headers = array_change_key_case(getallheaders(), CASE_LOWER);
     }
 
    
