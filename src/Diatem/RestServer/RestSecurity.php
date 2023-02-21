@@ -68,8 +68,8 @@ class RestSecurity{
     public static function checkBearerCrendentials($authentification){
         if(!RestConfig::getBearerTokenCheckerClassPath() || !RestConfig::getBearerTokenCheckerStaticMethod()){
             throw new RestException(500, 'Configuration incorrecte du paramétrage de vérification des tokens d\'authentification de type Bearer');
-        }
-
+		}
+		
         $datas = ListTools::toArray($authentification, ' ');
         if(strtolower($datas[0]) != 'bearer'){
             throw new RestException(401, 'Unauthorized : header \'authorization\' bearer requis');

@@ -48,10 +48,13 @@ class RestController{
      * @return void
      */
     public function _exec($arguments = array(), $secured = true, $allowTo = null, $disallowTo = null, $secureType = 'Inherit'){
-        //Si debug, initialisation de l'analyseur de perfs
+		//Si debug, initialisation de l'analyseur de perfs
+		
         if(isset(RestServer::$request['debug']) && RestServer::$request['debug']){
             $this->perfAnalyser = new PerfAnalyser();
-        }
+        }else{
+			$this->perfAnalyser = new PerfAnalyser();
+		}
 
         //Vérification pré-requis serveur
         RestConfig::checkConfiguration();
@@ -114,8 +117,13 @@ class RestController{
             $this->perfAnalyser->addPoint();
             $array['executionTime'] = $this->perfAnalyser->getTotalTimeInMS();
 
-            $array['logs'] = RestLog::getLogs();
-        }
+			$array['logs'] = RestLog::getLogs();
+			
+			$txt = (new \DateTime())->format('d/m/Y h:i:s') . ';' . $_SERVER['REDIRECT_URL'] . ";" . str_replace(' ms', '', $array['executionTime']);
+			//file_put_contents(TIMING_LOG_FILE, $txt . PHP_EOL, FILE_APPEND | LOCK_EX);
+			
+		}
+		
 
         //Statut HTTP
         $array['httpStatus'] = 200;
