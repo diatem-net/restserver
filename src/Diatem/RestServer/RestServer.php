@@ -64,25 +64,28 @@ class RestServer extends JRestServer{
 	function shutdownHandler(){
 		
 		$lasterror = error_get_last();
-		switch ($lasterror['type'])
-		{
-			case E_ERROR:
-			case E_CORE_ERROR:
-			case E_COMPILE_ERROR:
-			case E_USER_ERROR:
-			case E_RECOVERABLE_ERROR:
-			case E_CORE_WARNING:
-			case E_COMPILE_WARNING:
-			case E_PARSE:
-				$error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " | msg:" . $lasterror['message'] . " | file:" . $lasterror['file'] . " | ln:" . $lasterror['line'];
+		if(!is_null($lasterror)){
+			switch ($lasterror['type'])
+			{
+				case E_ERROR:
+				case E_CORE_ERROR:
+				case E_COMPILE_ERROR:
+				case E_USER_ERROR:
+				case E_RECOVERABLE_ERROR:
+				case E_CORE_WARNING:
+				case E_COMPILE_WARNING:
+				case E_PARSE:
+					$error = "[SHUTDOWN] lvl:" . $lasterror['type'] . " | msg:" . $lasterror['message'] . " | file:" . $lasterror['file'] . " | ln:" . $lasterror['line'];
 
-				ob_start(); 
-				debug_print_backtrace(); 
-				$stack = ob_get_contents(); 
-				ob_end_clean(); 
+					ob_start(); 
+					debug_print_backtrace(); 
+					$stack = ob_get_contents(); 
+					ob_end_clean(); 
 
-				$this->handleError(500, $error, null, null, $stack);
+					$this->handleError(500, $error, null, null, $stack);
+			}
 		}
+		
 	}
 
 	//--------------------------------------------------------------------------------------
