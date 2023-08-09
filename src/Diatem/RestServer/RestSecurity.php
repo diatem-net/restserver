@@ -70,11 +70,12 @@ class RestSecurity{
             throw new RestException(500, 'Configuration incorrecte du paramétrage de vérification des tokens d\'authentification de type Bearer');
         }
 
+		$datas = ListTools::toArray($authentification, ' ');
 		if(count($datas) != 2){
             throw new RestException(401, 'Unauthorized : header \'authorization\' format non conforme');
         }
 
-        $datas = ListTools::toArray($authentification, ' ');
+       
         if(strtolower($datas[0]) != 'bearer'){
             throw new RestException(401, 'Unauthorized : header \'authorization\' bearer requis');
         }
