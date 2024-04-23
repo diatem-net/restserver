@@ -195,7 +195,13 @@ class RestArgument
             }
         } else if ($this->type == self::TYPE_FILE) {
             if (isset(RestServer::$request[$this->name]) && RestServer::$request[$this->name] != null) {
-                $dt = Json::decode(RestServer::$request[$this->name]);
+                $dt = array();
+                if(is_array(RestServer::$request[$this->name])){
+                    $dt = RestServer::$request[$this->name];
+                }else{
+                    $dt = Json::decode(RestServer::$request[$this->name]);
+                }
+               
                 if (!$dt) {
                     throw new RestException(400, 'Argument ' . $this->name . ' : type File attendu (json comprenant deux attributs : fileName et fileContent)');
                 } else if (!isset($dt['fileName'])) {
